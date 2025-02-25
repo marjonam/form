@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFetch } from "../hooks/useFetch";
 import { FaUser } from "react-icons/fa";
 import { FaBook } from "react-icons/fa";
@@ -8,112 +8,109 @@ import { BiCategory } from "react-icons/bi";
 
 function App() {
   const [url, setUrl] = useState("https://jsonplaceholder.typicode.com/posts");
+  const [newProduct, setNewProduct] = useState(null);
   const [method, setMethod] = useState("GET");
-  const [productName, setProductName] = useState(null);
-  const [productDesc, setProductDesc] = useState(null);
-  const [productPrice, setProductPrice] = useState(null);
-  const [productBrand, setProductBrand] = useState(null);
-  const [productCategory, setProductCategory] = useState(null);
-
-  const newProduct = {
-    title: productName,
-    description: productDesc,
-    price: productPrice,
-    brand: productBrand,
-    category: productCategory,
-  };
+  const [productDes, setProductDes] = useState("");
+  const [productBrand, setProductBrand] = useState("");
+  const [productPrice, setProductPrice] = useState("");
+  const [productName, setProductName] = useState("");
+  const [productCategory, setProductCategory] = useState("");
 
   const { data, isPending, error } = useFetch(url, method, newProduct);
 
+  useEffect(() => {
+    console.log("method:", method);
+  }, [method]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setNewProduct({
+      name: productName,
+      description: productDes,
+      price: productPrice,
+      brand: productBrand,
+      category: productCategory,
+    });
+    setMethod("POST");
+  };
+
   return (
-    <div className="wrapper">
-      <h1>LOG IN</h1>
-      <form>
-        <div className="input-box">
-          <label>
-            <input
-              type="text"
-              placeholder="Username"
-              required
-              name="name"
-              onChange={(e) =>
-                setProductName((prev) => (prev = e.target.value))
-              }
-            />
-          </label>
-          <FaUser className="icon" />
-        </div>
+    <>
+      <div className="wrapper">
+        <h1>LOG IN</h1>
+        <form>
+          <div className="input-box">
+            <label>
+              <input
+                type="text"
+                placeholder="Username"
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+              />
+            </label>
+            <FaUser className="icon" />
+          </div>
 
-        <div className="input-box">
-          <label>
-            <input
-              type="text"
-              placeholder="description"
-              name="text"
-              onChange={(e) =>
-                setProductDesc((prev) => (prev = e.target.value))
-              }
-              required
-            />
-          </label>
-          <FaBook className="icon" />
-        </div>
+          <div className="input-box">
+            <label>
+              <input
+                type="text"
+                placeholder="description"
+                value={productDes}
+                onChange={(e) => setProductDes(e.target.value)}
+              />
+            </label>
+            <FaBook className="icon" />
+          </div>
 
-        <div className="input-box">
-          <label>
-            <input
-              type="number"
-              placeholder="price"
-              name="number"
-              onChange={(e) =>
-                setProductPrice((prev) => (prev = e.target.value))
-              }
-              required
-            />
-          </label>
-          <IoIosPricetag className="icon" />
-        </div>
+          <div className="input-box">
+            <label>
+              <input
+                type="number"
+                placeholder="price"
+                value={productPrice}
+                onChange={(e) => setProductPrice(e.target.value)}
+              />
+            </label>
+            <IoIosPricetag className="icon" />
+          </div>
 
-        <div className="input-box">
-          <label>
-            <input
-              type="text"
-              placeholder="brand"
-              name="text"
-              onChange={(e) =>
-                setProductBrand((prev) => (prev = e.target.value))
-              }
-              required
-            />
-          </label>
-          <TbBrand4Chan className="icon" />
-        </div>
+          <div className="input-box">
+            <label>
+              <input
+                type="text"
+                placeholder="brand"
+                value={productBrand}
+                onChange={(e) => setProductBrand(e.target.value)}
+              />
+            </label>
+            <TbBrand4Chan className="icon" />
+          </div>
 
-        <div className="input-box">
-          <label>
-            <input
-              type="text"
-              placeholder="category"
-              name="text"
-              onChange={(e) =>
-                setProductCategory((prev) => (prev = e.target.value))
-              }
-              required
-            />
-          </label>
-          <BiCategory className="icon" />
-        </div>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setMethod((prev) => prev == "POST");
-            console.log(method);
-          }}
-        >
-          post
-        </button>
-      </form>
-    </div>
+          <div className="input-box">
+            <label>
+              <input
+                type="text"
+                placeholder="category"
+                value={productCategory}
+                onChange={(e) => setProductCategory(e.target.value)}
+              />
+            </label>
+            <BiCategory className="icon" />
+          </div>
+
+          <button onClick={handleSubmit}>submit</button>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setMethod((prev) => (prev === "GET" ? "POST" : "GET"));
+            }}
+          >
+            post
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
 

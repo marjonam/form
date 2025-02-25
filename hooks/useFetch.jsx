@@ -9,22 +9,22 @@ export function useFetch(url, method = "GET", post = null) {
   useEffect(() => {
     if (method != "GET") {
       setFetchHeaders({
-        method: method,
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: post ? JSON.stringify(post) : null,
       });
     }
-  }, []);
+  }, [method, post]);
 
   useEffect(() => {
-    const fetchData = async (headers) => {
+    const fetchData = async () => {
       setIsPending(true);
       try {
-        const req = await fetch(url, { ...headers });
+        const req = await fetch(url, method === "GET" ? {} : fetchHeaders);
         if (!req.ok) {
-          throw new Error("something went wrong!!!!! " + req.statusText);
+          throw new Error("Something went wrong! " + req.statusText);
         }
         const data = await req.json();
         setData(data);
@@ -36,13 +36,10 @@ export function useFetch(url, method = "GET", post = null) {
       }
     };
 
-    if (method && post) {
-      fetchData(fetchHeaders);
-    }
-    if (method == "GET") {
+    if (method === "GET" || (method !== "GET" && fetchHeaders)) {
       fetchData();
     }
   }, [url, method, fetchHeaders]);
 
-  return { data, isPending, error };
+  return { data, error, isPending };
 }

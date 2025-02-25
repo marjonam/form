@@ -7,7 +7,9 @@ import { TbBrand4Chan } from "react-icons/tb";
 import { BiCategory } from "react-icons/bi";
 
 function App() {
-  const [url, setUrl] = useState("https://jsonplaceholder.typicode.com/posts");
+  const [url, setUrl] = useState(
+    "https://json-api.uz/api/project/test-loyihasi/products"
+  );
   const [newProduct, setNewProduct] = useState(null);
   const [method, setMethod] = useState("GET");
   const [productDes, setProductDes] = useState("");

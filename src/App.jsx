@@ -1,119 +1,67 @@
-import { useState, useEffect } from "react";
-import { useFetch } from "../hooks/useFetch";
-import { FaUser } from "react-icons/fa";
-import { FaBook } from "react-icons/fa";
-import { IoIosPricetag } from "react-icons/io";
-import { TbBrand4Chan } from "react-icons/tb";
-import { BiCategory } from "react-icons/bi";
+import { useState } from "react";
+import { useFetch } from "./hooks/useFetch";
 
-function App() {
-  const [url, setUrl] = useState(
-    "https://json-api.uz/api/project/test-loyihasi/products"
-  );
-  const [newProduct, setNewProduct] = useState(null);
-  const [method, setMethod] = useState("GET");
-  const [productDes, setProductDes] = useState("");
-  const [productBrand, setProductBrand] = useState("");
-  const [productPrice, setProductPrice] = useState("");
-  const [productName, setProductName] = useState("");
-  const [productCategory, setProductCategory] = useState("");
+export default function App() {
+  const { posts, loading, createPost, deletePost } = useFetch();
+  const [title, setTitle] = useState("");
+  const [textArea, setTextArea] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const { data, isPending, error } = useFetch(url, method, newProduct);
-
-  useEffect(() => {
-    console.log("method:", method);
-  }, [method]);
-
-  const handleSubmit = (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
-    setNewProduct({
-      name: productName,
-      description: productDes,
-      price: productPrice,
-      brand: productBrand,
-      category: productCategory,
-    });
-    setMethod("POST");
-  };
+    if (title.trim() && textArea.trim()) {
+      createPost(title, textArea);
+      setTitle("");
+      setTextArea("");
+    }
+  }
+
+  const filteredPosts = posts.filter(
+    (post) =>
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.textArea?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <>
-      <div className="wrapper">
-        <h1>LOG IN</h1>
-        <form>
-          <div className="input-box">
-            <label>
-              <input
-                type="text"
-                placeholder="Username"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
-              />
-            </label>
-            <FaUser className="icon" />
-          </div>
+    <div className="wrapper">
+      <h1>Posts</h1>
 
-          <div className="input-box">
-            <label>
-              <input
-                type="text"
-                placeholder="description"
-                value={productDes}
-                onChange={(e) => setProductDes(e.target.value)}
-              />
-            </label>
-            <FaBook className="icon" />
-          </div>
+      <form onSubmit={handleSubmit} className="form">
+        <div className="input-box">
+          {" "}
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="inputTitle"
+          />
+        </div>
 
-          <div className="input-box">
-            <label>
-              <input
-                type="number"
-                placeholder="price"
-                value={productPrice}
-                onChange={(e) => setProductPrice(e.target.value)}
-              />
-            </label>
-            <IoIosPricetag className="icon" />
-          </div>
+        <div className="input-box">
+          {" "}
+          <input
+            type="text"
+            placeholder="Text"
+            value={textArea}
+            onChange={(e) => setTextArea(e.target.value)}
+            className="textArea"
+          />
+        </div>
+        <button type="submit">Create Post</button>
+      </form>
 
-          <div className="input-box">
-            <label>
-              <input
-                type="text"
-                placeholder="brand"
-                value={productBrand}
-                onChange={(e) => setProductBrand(e.target.value)}
-              />
-            </label>
-            <TbBrand4Chan className="icon" />
-          </div>
+      {loading && <p>Loading posts...</p>}
 
-          <div className="input-box">
-            <label>
-              <input
-                type="text"
-                placeholder="category"
-                value={productCategory}
-                onChange={(e) => setProductCategory(e.target.value)}
-              />
-            </label>
-            <BiCategory className="icon" />
+      <div className="box">
+        {filteredPosts.map((post) => (
+          <div key={post.id} className="post">
+            <h2>{post.title}</h2>
+            <h3>{post.textArea}</h3>
+            <button onClick={() => deletePost(post.id)}>Delete Post</button>
           </div>
-
-          <button onClick={handleSubmit}>submit</button>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setMethod((prev) => (prev === "GET" ? "POST" : "GET"));
-            }}
-          >
-            post
-          </button>
-        </form>
+        ))}
       </div>
-    </>
+    </div>
   );
 }
-
-export default App;
